@@ -20,21 +20,21 @@ async fn main() {
     println!("Online");
     // now that we're broadcasting, start a web server to receive API calls to start/stop streaming
 
-    let start = warp::path!("start" / String / String)
-        .map(|url, key| unsafe { start(url, key) });
+    let start = warp::path!("start" / String)
+        .map(|url| unsafe { start(url) });
 
     let stop = warp::path("stop").map(|| unsafe { stop() });
 
     warp::serve(start.or(stop))
-        .run(([127, 0, 0, 1], 3030))
+        .run(([0, 0, 0, 0], 3030))
         .await;
 }
 
-unsafe fn start(url: String, key: String) -> &'static str {
-    println!("{} key {}", url, key);
+unsafe fn start(url: String) -> &'static str {
+    println!("{}", url);
 
     //Twitch URL = rtmp://live.twitch.tv/app/$KEY
-    let cmd: &str = &*format!("gst-launch-1.0 rtspsrc location=rtsp://localhost:1181/stream latency=100 ! rtph264depay ! queue ! flvmux ! rtmpsink location=\"{}/{} live=1\"", url, key);
+    let cmd: &str = &*format!("rtspsrc location=rtsp://localhost:1181/stream latency=100 ! rtph264depay ! queue ! flvmux ! rtmpsink location=\"{} live=1\"", url);
     DISCRETE = Some(Command::new("gst-launch-1.0").arg(&cmd).spawn().expect("FAILED TO START STREAM"));
     return "STARTING";
 }
