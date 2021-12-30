@@ -13,7 +13,7 @@ async fn main() {
         multicast_group: "239.255.70.77".parse().unwrap(),
         host: "0.0.0.0".parse().unwrap(),
         port: 50765,
-        command: dns::Command::Broadcast { name: Some("streamline-cam".parse().unwrap()) }
+        command: dns::Command::Broadcast { name: "streamline-cam".parse().unwrap() }
     };
     thread::spawn(move || {
         dns::run(dnsargs)

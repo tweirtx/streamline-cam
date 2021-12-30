@@ -32,7 +32,7 @@ pub enum Command {
     // #[structopt(name = "broadcast")]
     Broadcast {
         /// The name to broadcast as. Defaults to device's hostname.
-        name: Option<String>,
+        name: String,
     },
     /// Listen for a particular device and display its IP address.
     // #[structopt(name = "find")]
@@ -53,7 +53,7 @@ pub fn run(args: Opt) -> io::Result<()> {
     let multicast_sockaddr = (args.multicast_group, args.port);
     match args.command {
         Command::Broadcast { name } => {
-            let message = format!("findme:name=streamline-control");
+            let message = format!("findme:name={}", name);
             let sock = UdpSocket::bind((args.host, 0))?;
             loop {
                 sock.send_to(message.as_bytes(), multicast_sockaddr)?;
